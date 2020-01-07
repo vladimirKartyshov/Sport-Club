@@ -14,7 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
-import com.example.sportclub.db.SpotClubContract;
+import com.example.sportclub.db.ClubSportContract;
 
 import java.util.ArrayList;
 
@@ -72,11 +72,11 @@ public class AddMemberActivity extends AppCompatActivity {
                 String selectedGender = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selectedGender)) {
                     if (selectedGender.equals("Male")) {
-                        gender = SpotClubContract.MemberEntry.GENDER_MALE;
+                        gender = ClubSportContract.MemberEntry.GENDER_MALE;
                     } else if (selectedGender.equals("Female")) {
-                        gender = SpotClubContract.MemberEntry.GENDER_FEMALE;
+                        gender = ClubSportContract.MemberEntry.GENDER_FEMALE;
                     } else {
-                        gender = SpotClubContract.MemberEntry.GENDER_UNKNOWN;
+                        gender = ClubSportContract.MemberEntry.GENDER_UNKNOWN;
                     }
                 }
             }

@@ -4,11 +4,12 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 public class SportContentProvider extends ContentProvider {
 
-    SportDbOpenHelper sportDbOpenHelper;
+    SportDbOpenHelper dbOpenHelper;
 
     private static final int MEMBERS = 111;
     private static final int MEMBER_ID = 222;
@@ -27,12 +28,32 @@ public class SportContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        sportDbOpenHelper = new SportDbOpenHelper(getContext());
+        dbOpenHelper = new SportDbOpenHelper(getContext());
         return false;
     }
 
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
+    public Cursor query(Uri uri, String[] projection,
+                        String selection, String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = dbOpenHelper.getReadableDatabase();
+        //тк метод query возвращает тип cursor, то создаем обЪект класса Cursor
+        Cursor cursor;
+
+        int match = uriMatcher.match(uri);//возвращает введенный uri
+
+        switch (match){
+            case MEMBERS:
+                cursor = db.query(ClubSportContract.MemberEntry.TABLE_NAME,projection,selection,
+                        selectionArgs,null,null,sortOrder);
+                break;
+
+            case MEMBER_ID:
+
+                break;
+
+                default:
+
+        }
         return null;
     }
 

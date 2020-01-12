@@ -1,11 +1,13 @@
 package com.example.sportclub.db;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.widget.Toast;
 
 public class SportContentProvider extends ContentProvider {
 
@@ -32,6 +34,7 @@ public class SportContentProvider extends ContentProvider {
         return false;
     }
 
+    //параметр projection это название столбцов
     @Override
     public Cursor query(Uri uri, String[] projection,
                         String selection, String[] selectionArgs, String sortOrder) {
@@ -47,14 +50,21 @@ public class SportContentProvider extends ContentProvider {
                         selectionArgs,null,null,sortOrder);
                 break;
 
+                //устанавливаем selection(отбор) "_id=?" вместо вопроса в SQL коде будут передо-ся аргументы selectionArgs
+                //selectionArgs(аргументы отбора) = новый массив ContentUris его метод parseId(uri)преобразует
+                // последний сегмент после последнего / в числовой
             case MEMBER_ID:
-
+                selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                cursor = db.query(ClubSportContract.MemberEntry.TABLE_NAME,projection,selection,
+                        selectionArgs,null,null,sortOrder);
                 break;
 
                 default:
-
+                    Toast.makeText(getContext(),"Incorrect URI", Toast.LENGTH_LONG);
+                    throw new IllegalArgumentException("Can't query incorrect URI" + uri);
         }
-        return null;
+        return cursor;
     }
 
     @Override

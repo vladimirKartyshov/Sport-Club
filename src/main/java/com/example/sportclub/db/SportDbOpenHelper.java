@@ -15,13 +15,13 @@ public class SportDbOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         //создаем таблицу
-        String CREATE_MEBERS_TABLE = "CREATE TABLE " + ClubSportContract.MemberEntry.TABLE_NAME + "("
+        String CREATE_MEMBERS_TABLE = "CREATE TABLE " + ClubSportContract.MemberEntry.TABLE_NAME + "("
                 + ClubSportContract.MemberEntry._ID + " INTEGER PRIMARY KEY,"
                 + ClubSportContract.MemberEntry.COLUMN_FIRST_NAME + " TEXT,"
                 + ClubSportContract.MemberEntry.COLUMN_LAST_NAME + " TEXT,"
                 + ClubSportContract.MemberEntry.COLUMN_GENDER + " INTEGER NOT NULL,"
                 + ClubSportContract.MemberEntry.COLUMN_SPORT + " TEXT" + ")";
-        db.execSQL(CREATE_MEBERS_TABLE);
+        db.execSQL(CREATE_MEMBERS_TABLE);
     }
 
     @Override

@@ -94,8 +94,29 @@ public class SportContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
+
+        int match = uriMatcher.match(uri);//возвращает введенный uri
+
+        switch (match){
+            case MEMBERS:
+
+                return db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+
+            //устанавливаем selection(отбор) "_id=?" вместо вопроса в SQL коде будут передо-ся аргументы selectionArgs
+            //selectionArgs(аргументы отбора) = новый массив ContentUris его метод parseId(uri)преобразует
+            // последний сегмент после последнего / в числовой
+            case MEMBER_ID:
+                selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                return db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+
+            default:
+                throw new IllegalArgumentException("Can't query incorrect URI" + uri);
+        }
     }
 
     @Override

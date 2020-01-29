@@ -69,6 +69,27 @@ public class SportContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
+        String firstName = values.getAsString(ClubSportContract.MemberEntry.COLUMN_FIRST_NAME);
+        if (firstName == null){
+            throw new IllegalArgumentException("You have to input first name");
+        }
+
+        String lastName = values.getAsString(ClubSportContract.MemberEntry.COLUMN_LAST_NAME);
+        if (lastName == null){
+            throw new IllegalArgumentException("You have to input last name");
+        }
+
+        Integer gender = values.getAsInteger(ClubSportContract.MemberEntry.COLUMN_GENDER);
+        if (gender  == null || !(gender == ClubSportContract.MemberEntry.GENDER_UNKNOWN || gender ==
+                ClubSportContract.MemberEntry.GENDER_MALE || gender == ClubSportContract.MemberEntry.GENDER_FEMALE)){
+            throw new IllegalArgumentException("You have to input correct gender");
+        }
+
+        String sport = values.getAsString(ClubSportContract.MemberEntry.COLUMN_SPORT);
+        if (sport == null){
+            throw new IllegalArgumentException("You have to input sport name");
+        }
+
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 
         int match = uriMatcher.match(uri);
@@ -114,6 +135,36 @@ public class SportContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        if (values.containsKey(ClubSportContract.MemberEntry.COLUMN_FIRST_NAME)){
+            String firstName = values.getAsString(ClubSportContract.MemberEntry.COLUMN_FIRST_NAME);
+            if (firstName == null){
+                throw new IllegalArgumentException("You have to input first name");
+            }
+        }
+
+        if (values.containsKey(ClubSportContract.MemberEntry.COLUMN_LAST_NAME)){
+            String lastName = values.getAsString(ClubSportContract.MemberEntry.COLUMN_LAST_NAME);
+            if (lastName == null){
+                throw new IllegalArgumentException("You have to input last name");
+            }
+        }
+
+        if (values.containsKey(ClubSportContract.MemberEntry.COLUMN_GENDER)){
+            Integer gender = values.getAsInteger(ClubSportContract.MemberEntry.COLUMN_GENDER);
+            if (gender  == null || !(gender == ClubSportContract.MemberEntry.GENDER_UNKNOWN || gender ==
+                    ClubSportContract.MemberEntry.GENDER_MALE || gender == ClubSportContract.MemberEntry.GENDER_FEMALE)){
+                throw new IllegalArgumentException("You have to input correct gender");
+            }
+        }
+
+        if (values.containsKey(ClubSportContract.MemberEntry.COLUMN_SPORT)){
+
+            String sport = values.getAsString(ClubSportContract.MemberEntry.COLUMN_SPORT);
+            if (sport == null){
+                throw new IllegalArgumentException("You have to input sport name");
+            }
+        }
 
         SQLiteDatabase db = dbOpenHelper.getWritableDatabase();
 

@@ -100,9 +100,6 @@ public class SportContentProvider extends ContentProvider {
 
                 return db.delete(ClubSportContract.MemberEntry.TABLE_NAME, selection, selectionArgs);
 
-            //устанавливаем selection(отбор) "_id=?" вместо вопроса в SQL коде будут передо-ся аргументы selectionArgs
-            //selectionArgs(аргументы отбора) = новый массив ContentUris его метод parseId(uri)преобразует
-            // последний сегмент после последнего / в числовой
             case MEMBER_ID:
                 selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
@@ -127,9 +124,6 @@ public class SportContentProvider extends ContentProvider {
 
                 return db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
 
-            //устанавливаем selection(отбор) "_id=?" вместо вопроса в SQL коде будут передо-ся аргументы selectionArgs
-            //selectionArgs(аргументы отбора) = новый массив ContentUris его метод parseId(uri)преобразует
-            // последний сегмент после последнего / в числовой
             case MEMBER_ID:
                 selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
@@ -143,6 +137,21 @@ public class SportContentProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        int match = uriMatcher.match(uri);//возвращает введенный uri
+
+        switch (match){
+            case MEMBERS:
+
+                return ClubSportContract.MemberEntry.CONTENT_MULTIPLE_ITEMS;
+
+            case MEMBER_ID:
+
+
+                return ClubSportContract.MemberEntry.CONTENT_SINGLE_ITEM;
+
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
     }
 }

@@ -63,6 +63,11 @@ public class SportContentProvider extends ContentProvider {
                 default:
                     throw new IllegalArgumentException("Can't query incorrect URI" + uri);
         }
+
+        //с помощью этого метода даем знать для чего нужен cursor, для обращения ко все таблице или
+        // к одной строке по этому (uri)
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+
         return cursor;
     }
 
@@ -102,6 +107,8 @@ public class SportContentProvider extends ContentProvider {
                return null;
            }
 
+           getContext().getContentResolver().notifyChange(uri,null);
+
            return ContentUris.withAppendedId(uri,id);
 
             default:
@@ -116,21 +123,28 @@ public class SportContentProvider extends ContentProvider {
 
         int match = uriMatcher.match(uri);//возвращает введенный uri
 
+        int rowsDeleted;
+
         switch (match){
             case MEMBERS:
 
-                return db.delete(ClubSportContract.MemberEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted =  db.delete(ClubSportContract.MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
 
             case MEMBER_ID:
                 selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-
-                return db.delete(ClubSportContract.MemberEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted =  db.delete(ClubSportContract.MemberEntry.TABLE_NAME, selection, selectionArgs);
+                break;
 
             default:
                 throw new IllegalArgumentException("Can't delete this URI" + uri);
         }
 
+        if (rowsDeleted != 0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsDeleted;
     }
 
     @Override
@@ -170,20 +184,33 @@ public class SportContentProvider extends ContentProvider {
 
         int match = uriMatcher.match(uri);//возвращает введенный uri
 
+        int rowsUpdated;
+
         switch (match){
             case MEMBERS:
 
-                return db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+                 rowsUpdated =  db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+
+                break;
 
             case MEMBER_ID:
                 selection = ClubSportContract.MemberEntry._ID + "=?";//выбираем запись по столбцу ID
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                rowsUpdated =  db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
 
-                return db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
+            if (rowsUpdated != 0){
+                getContext().getContentResolver().notifyChange(uri,null);
+            }
+            break;
 
             default:
                 throw new IllegalArgumentException("Can't update this URI" + uri);
         }
+
+        if (rowsUpdated != 0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsUpdated;
     }
 
     @Override

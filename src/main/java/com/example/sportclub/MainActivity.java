@@ -6,12 +6,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import com.example.sportclub.db.ClubSportContract;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int MEMBER_LOADER = 123;
+    MemberCursorAdapter memberCursorAdapter;
 
     ListView dataListView;
 
@@ -32,31 +40,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        memberCursorAdapter = new MemberCursorAdapter(this, null,false);
+        dataListView.setAdapter(memberCursorAdapter);
+
+        getSupportLoaderManager().initLoader(MEMBER_LOADER,null,this);
+
         }
 
+    @NonNull
     @Override
-    protected void onStart() {
-        super.onStart();
-        displayData();
-    }
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
 
-    private void displayData(){
         String[] projection = {
                 ClubSportContract.MemberEntry._ID,
                 ClubSportContract.MemberEntry.COLUMN_FIRST_NAME,
                 ClubSportContract.MemberEntry.COLUMN_LAST_NAME,
-                ClubSportContract.MemberEntry.COLUMN_GENDER,
                 ClubSportContract.MemberEntry.COLUMN_SPORT
         };
 
-        Cursor cursor = getContentResolver().query(
+        CursorLoader cursorLoader = new CursorLoader(this,
                 ClubSportContract.MemberEntry.CONTENT_URI,
                 projection,
                 null,
                 null,
                 null
         );
-        MemberCursorAdapter cursorAdapter = new MemberCursorAdapter(this,cursor,false);
-        dataListView.setAdapter(cursorAdapter);
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+
+        memberCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
+        memberCursorAdapter.swapCursor(null);
+
     }
 }

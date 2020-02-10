@@ -2,6 +2,8 @@ package com.example.sportclub;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,14 +17,21 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
 import com.example.sportclub.db.ClubSportContract;
 
 import java.util.ArrayList;
 
-public class AddMemberActivity extends AppCompatActivity {
+public class AddMemberActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int EDIT_MEMBER_LOADER = 111;
+    Uri currentMemberUri;
 
     private EditText firstNameEditText;
     private EditText lastNameEditText;
@@ -36,6 +45,16 @@ public class AddMemberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_member);
+
+        Intent intent = getIntent();
+
+        currentMemberUri = intent.getData();
+
+        if (currentMemberUri == null){
+            setTitle("Add a Member");
+        }else {
+            setTitle("Edit the Member");
+        }
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
         lastNameEditText = findViewById(R.id.lastNameEditText);
@@ -89,6 +108,8 @@ public class AddMemberActivity extends AppCompatActivity {
                 gender = 0;
             }
         });
+
+        getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER,null,this);
     }
 
     @Override
@@ -133,6 +154,70 @@ public class AddMemberActivity extends AppCompatActivity {
         }else {
             Toast.makeText(this,"Data saved",Toast.LENGTH_LONG).show();
         }
+
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
+
+        String [] projection = {
+                ClubSportContract.MemberEntry._ID,
+                ClubSportContract.MemberEntry.COLUMN_FIRST_NAME,
+                ClubSportContract.MemberEntry.COLUMN_LAST_NAME,
+                ClubSportContract.MemberEntry.COLUMN_GENDER,
+                ClubSportContract.MemberEntry.COLUMN_SPORT
+        };
+
+        return  new CursorLoader(this,
+                currentMemberUri,
+                projection,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
+        if (cursor.moveToFirst()){
+            int firstNameColumnIndex = cursor.getColumnIndex
+                    (ClubSportContract.MemberEntry.COLUMN_FIRST_NAME);
+
+            int lastNameColumnIndex = cursor.getColumnIndex
+                    (ClubSportContract.MemberEntry.COLUMN_LAST_NAME);
+
+            int genderColumnIndex = cursor.getColumnIndex
+                    (ClubSportContract.MemberEntry.COLUMN_GENDER);
+
+            int sportColumnIndex = cursor.getColumnIndex
+                    (ClubSportContract.MemberEntry.COLUMN_SPORT);
+
+            String firstName = cursor.getString(firstNameColumnIndex);
+            String lastName = cursor.getString(lastNameColumnIndex);
+            int gender = cursor.getInt(genderColumnIndex);
+            String sport = cursor.getString(sportColumnIndex);
+
+            firstNameEditText.setText(firstName);
+            lastNameEditText.setText(lastName);
+            sportEditText.setText(sport);
+
+            switch (gender){
+                case ClubSportContract.MemberEntry.GENDER_MALE:
+                    genderSpinner.setSelection(1);
+                    break;
+                case ClubSportContract.MemberEntry.GENDER_FEMALE:
+                    genderSpinner.setSelection(2);
+                    break;
+                case ClubSportContract.MemberEntry.GENDER_UNKNOWN:
+                    genderSpinner.setSelection(0);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
 
     }
 }

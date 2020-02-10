@@ -198,9 +198,6 @@ public class SportContentProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsUpdated =  db.update(ClubSportContract.MemberEntry.TABLE_NAME, values, selection, selectionArgs);
 
-            if (rowsUpdated != 0){
-                getContext().getContentResolver().notifyChange(uri,null);
-            }
             break;
 
             default:

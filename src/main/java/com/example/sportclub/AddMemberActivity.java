@@ -54,6 +54,7 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
             setTitle("Add a Member");
         }else {
             setTitle("Edit the Member");
+            getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER,null,this);
         }
 
         firstNameEditText = findViewById(R.id.firstNameEditText);
@@ -108,8 +109,6 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
                 gender = 0;
             }
         });
-
-        getSupportLoaderManager().initLoader(EDIT_MEMBER_LOADER,null,this);
     }
 
     @Override
@@ -138,6 +137,24 @@ public class AddMemberActivity extends AppCompatActivity implements LoaderManage
         String firstName = firstNameEditText.getText().toString().trim();//trim-убирает пробелы в нач и конц строки
         String lastName = lastNameEditText.getText().toString().trim();
         String sport = sportEditText.getText().toString().trim();
+
+        if (TextUtils.isEmpty(firstName)){
+            Toast.makeText(this,"Input the firstName",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }else  if (TextUtils.isEmpty(lastName)) {
+            Toast.makeText(this, "Input the lastName",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }else if (TextUtils.isEmpty(sport)) {
+            Toast.makeText(this, "Input the sport",
+                    Toast.LENGTH_LONG).show();
+            return;
+        } else if (gender == ClubSportContract.MemberEntry.GENDER_UNKNOWN) {
+            Toast.makeText(this, "Choose the gender",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(ClubSportContract.MemberEntry.COLUMN_FIRST_NAME,firstName);
